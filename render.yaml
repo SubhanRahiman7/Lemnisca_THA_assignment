@@ -1,0 +1,10 @@
+# Render Blueprint: use Python 3.12 (required for pydantic wheels; 3.14 builds from source and fails)
+services:
+  - type: web
+    name: Lemnisca_THA_assignment
+    runtime: python
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.11"
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT

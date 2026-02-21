@@ -112,10 +112,9 @@ All assignment requirements and attempted bonuses are complete. You can deploy a
 ### Option A — Render (backend + frontend)
 
 1. **Backend (Web Service)**  
-   - New Web Service, connect repo. Root directory: `backend`.  
-   - Build: `pip install -r requirements.txt`.  
-   - Start: `uvicorn main:app --host 0.0.0.0 --port $PORT`.  
-   - Env: `GROQ_API_KEY`, `DOCS_DIR` (or ensure PDFs are in the deployed tree).  
+   - New Web Service, connect repo. **Root directory:** leave empty.  
+   - Build: `cd backend && pip install -r requirements.txt`. Start: `cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT`.  
+   - **Environment:** `GROQ_API_KEY` (required). **Set `PYTHON_VERSION` = `3.12.11`** so Render uses Python 3.12 (default 3.14 breaks pydantic build).  
    - First deploy builds the FAISS index (may take a few minutes).
 
 2. **Frontend (Static Site)**  
