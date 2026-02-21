@@ -132,5 +132,14 @@ I used **ChatGPT** for reference and for some simple queries while building this
 - *"FastAPI: how to return streaming JSON response line by line?"*
 - *"React: how to read a streaming fetch response with getReader()?"*
 - *"Python: get path to project root or parent folder."*
+- *"How to use Groq API with Python? Example for chat completion."*
+- *"What is FAISS and how do you use it for semantic search with sentence-transformers?"*
+- *"FastAPI: enable CORS for all origins."*
+- *"React: environment variable REACT_APP_ for build-time config."*
+- *"How to run a FastAPI app with uvicorn on 0.0.0.0 for deployment?"*
+- *"pydantic-settings: load config from environment variables."*
+- *"Python: lazy load a heavy model on first request to save memory."*
+- *"Render.com: specify Python version for Web Service."*
+- *"Render free tier: out of memory on startup — use CPU-only PyTorch?"*
 
 These were for understanding concepts and syntax; I did not ask for full implementations or large code blocks.
