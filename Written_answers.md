@@ -114,6 +114,12 @@ Introduce a **persistent store** for conversation history (e.g. Redis or Postgre
 
 ---
 
+## Live deployment (bonus)
+
+The app is deployed on Render. **Frontend:** https://lemnisca-tha-assignment-1.onrender.com — **Backend API:** https://lemnisca-tha-assignment.onrender.com (health: /health). Free tier: backend may sleep after inactivity; first request after that can take 30–60 s. First chat message may be slower while the embedding model loads.
+
+---
+
 ## AI Usage
 
 I used **ChatGPT** for reference and for some simple queries while building this. Example prompts I gave (learning / reference only):

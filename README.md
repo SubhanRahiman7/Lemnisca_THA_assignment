@@ -2,6 +2,13 @@
 
 Customer support chatbot for Clearpath (fictional project management SaaS). It answers questions using RAG over 30 PDF docs, a rule-based model router (Groq: Llama 3.1 8B vs Llama 3.3 70B), and an output evaluator that flags unreliable responses.
 
+## Live deployment
+
+- **Frontend (chat UI):** [https://lemnisca-tha-assignment-1.onrender.com](https://lemnisca-tha-assignment-1.onrender.com)  
+- **Backend API:** [https://lemnisca-tha-assignment.onrender.com](https://lemnisca-tha-assignment.onrender.com) — health: [/health](https://lemnisca-tha-assignment.onrender.com/health)
+
+Free tier: the backend may sleep after inactivity; the first request after that can take 30–60 seconds to wake. The first chat message may also be slower while the embedding model loads.
+
 ## How to run locally
 
 ### 1. Backend (Python 3.11 or 3.12)
@@ -90,7 +97,7 @@ your-submission/
 - **Conversation memory**: Implemented. The backend stores the last 6 messages per `conversation_id` and sends them to the LLM so follow-ups work. Use “New chat” to start a fresh conversation.
 - **Streaming**: Implemented. The UI uses `POST /query/stream`; the backend streams the LLM response token-by-token (NDJSON). See *Written_answers.md* for where structured output parsing breaks with streaming.
 - **Eval harness**: Implemented. Test cases in `backend/eval_queries.json`; run with API up: `cd backend && python run_eval.py`. Use `--json` for JSON report. See “Eval harness” below.
-- **Live deploy**: Not implemented.
+- **Live deploy**: Implemented. Frontend and backend are on Render — see [Live deployment](#live-deployment) above.
 
 ## Eval harness (how to run)
 
@@ -123,7 +130,7 @@ All assignment requirements and attempted bonuses are complete. You can deploy a
 
 2. **Frontend (Static Site)**  
    - New Static Site, root: `frontend`. Build: `npm install && npm run build`. Publish: `build`.  
-   - Env: `REACT_APP_API_URL=https://your-backend.onrender.com`.
+   - Env: `REACT_APP_API_URL=https://lemnisca-tha-assignment.onrender.com` (or your backend URL).
 
 3. **CORS**  
    - Backend allows all origins in `main.py`; for production you can restrict to your frontend URL.
