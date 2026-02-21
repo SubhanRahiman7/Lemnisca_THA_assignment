@@ -116,13 +116,13 @@ Introduce a **persistent store** for conversation history (e.g. Redis or Postgre
 
 ## Live deployment (bonus)
 
-The app is deployed on Render. **Frontend:** https://lemnisca-tha-assignment-1.onrender.com — **Backend API:** https://lemnisca-tha-assignment.onrender.com (health: /health). Free tier: backend may sleep after inactivity; first request after that can take 30–60 s. First chat message may be slower while the embedding model loads.
+The app is deployed on Render. **Frontend:** https://lemnisca-tha-assignment-1.onrender.com — **Backend API:** https://lemnisca-tha-assignment.onrender.com (health: /health). The app was very fast when run locally; performance on the live site is reduced due to Render free-tier limitations (cold starts, 512 MB RAM, model lazy-loading). Free tier: backend may sleep after inactivity; first request after that can take 30–60 s. First chat message may be slower while the embedding model loads.
 
 ---
 
 ## AI Usage
 
-I used **ChatGPT** for reference and for some simple queries while building this. Example prompts I gave (learning / reference only):
+I used **different LLMs** (including ChatGPT) for reference and for simple queries while building this. I am not able to provide the exact prompts from all of them; below are **some prompts I can provide** (learning / reference only):
 
 - *"What is RAG and how does it work in a chatbot?"*
 - *"Explain retrieval-augmented generation for a SaaS support bot in simple terms."*

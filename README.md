@@ -7,7 +7,7 @@ Customer support chatbot for Clearpath (fictional project management SaaS). It a
 - **Frontend (chat UI):** [https://lemnisca-tha-assignment-1.onrender.com](https://lemnisca-tha-assignment-1.onrender.com)  
 - **Backend API:** [https://lemnisca-tha-assignment.onrender.com](https://lemnisca-tha-assignment.onrender.com) — health: [/health](https://lemnisca-tha-assignment.onrender.com/health)
 
-Free tier: the backend may sleep after inactivity; the first request after that can take 30–60 seconds to wake. The first chat message may also be slower while the embedding model loads.
+The app is much faster when run locally; performance on the live site is reduced by Render free-tier limits (cold starts, 512 MB RAM). Free tier: the backend may sleep after inactivity; the first request after that can take 30–60 seconds to wake. The first chat message may also be slower while the embedding model loads.
 
 ## How to run locally
 
