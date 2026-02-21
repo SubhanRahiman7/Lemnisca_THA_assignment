@@ -11,6 +11,8 @@ Free tier: the backend may sleep after inactivity; the first request after that 
 
 ## How to run locally
 
+All commands below are from the **project root** (the folder that contains `backend/`, `frontend/`, and `docs/`).
+
 ### 1. Backend (Python 3.11 or 3.12)
 
 ```bash
@@ -26,19 +28,15 @@ Set your Groq API key (get one at [console.groq.com](https://console.groq.com)):
 export GROQ_API_KEY=your_key_here
 ```
 
-**If you see `401 Invalid API Key`** (e.g. when chatting or running the eval harness): the key is wrong, expired, or revoked. Create or copy a new key at [console.groq.com](https://console.groq.com), set `GROQ_API_KEY` again, and restart the backend. No spaces or quotes around the key.
+**If you see `401 Invalid API Key`**: the key is wrong, expired, or revoked. Create or copy a new key at [console.groq.com](https://console.groq.com), set `GROQ_API_KEY` again, and restart the backend. No spaces or quotes around the key.
 
-Optional: put it in `backend/.env`:
+Optional: put the key in `backend/.env`:
 
 ```
 GROQ_API_KEY=your_key_here
 ```
 
-PDFs live in the repo folder `docs/` at repo root. To use a different path (e.g. when deploying):
-
-```bash
-export DOCS_DIR=/path/to/docs
-```
+PDFs are in the repo folder **`docs/`** at project root. The backend uses that by default. To point elsewhere: `export DOCS_DIR=/path/to/docs`.
 
 Start the API:
 
@@ -47,8 +45,8 @@ python main.py
 ```
 
 - API: **http://localhost:8000**
-- First run builds the FAISS index from the PDFs (1–2 minutes). Index is cached in `backend/data/`.
-- Endpoints: `GET /health`, `POST /retrieve` (RAG-only test), `POST /query` (full pipeline), `GET /routing_logs`
+- If `backend/data/faiss.index` exists, the server loads it at startup. Otherwise the first run builds the index from `docs/` (1–2 minutes) and saves it there.
+- Endpoints: `GET /health`, `POST /retrieve`, `POST /query`, `GET /routing_logs`
 
 ### 2. Frontend (React)
 
@@ -59,7 +57,7 @@ npm start
 ```
 
 - App: **http://localhost:3000**
-- Set `REACT_APP_API_URL=http://localhost:8000` if the API is on another host/port.
+- The app talks to the API at `http://localhost:8000` by default. To use a different backend (e.g. the live Render API), set **`REACT_APP_API_URL`** before `npm start`, e.g. `export REACT_APP_API_URL=https://lemnisca-tha-assignment.onrender.com`.
 
 ## Groq models used
 
