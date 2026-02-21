@@ -9,6 +9,9 @@ __pycache__/
 .venv/
 venv/
 backend/data/
+# Allow pre-built FAISS index for Render free tier (avoids building at startup = OOM)
+!backend/data/faiss.index
+!backend/data/faiss.meta.json
 
 # Node / frontend
 node_modules/

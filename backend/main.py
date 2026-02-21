@@ -20,6 +20,14 @@ from llm import build_prompt, call_groq, stream_groq
 from rag.retrieval import build_index, get_embedding_model, load_index, retrieve
 from router import classify
 
+
+def _get_embedding_model():
+    """Return embedding model, loading it on first use (saves ~80 MB at startup on Render)."""
+    global _embedding_model
+    if _embedding_model is None:
+        _embedding_model = get_embedding_model()
+    return _embedding_model
+
 # Eval harness: reuse check logic from run_eval (no HTTP)
 try:
     from run_eval import check_answer, load_cases
@@ -45,8 +53,8 @@ async def lifespan(app: FastAPI):
     index_path = Path(__file__).parent / "data" / "faiss.index"
     if index_path.exists():
         _faiss_index, _chunk_metadata = load_index(index_path)
-        _embedding_model = get_embedding_model()
-        print(f"Loaded FAISS index with {len(_chunk_metadata)} chunks")
+        _embedding_model = None  # Lazy-load on first request to save memory (e.g. Render 512 MB)
+        print(f"Loaded FAISS index with {len(_chunk_metadata)} chunks (embedding model will load on first query)")
     else:
         _embedding_model, _faiss_index, _chunk_metadata = build_index(docs_dir, index_path)
         print(f"Built FAISS index with {len(_chunk_metadata)} chunks")
@@ -84,11 +92,12 @@ class ChunkSource(BaseModel):
 @app.post("/retrieve", response_model=dict)
 def retrieve_endpoint(body: RetrieveRequest):
     """Step 1 test: RAG retrieval only. Returns top-k chunks and scores."""
-    if _faiss_index is None or _embedding_model is None:
+    if _faiss_index is None:
         return {"error": "RAG not initialized", "chunks": [], "sources": []}
+    model = _get_embedding_model()
     results = retrieve(
         body.query,
-        _embedding_model,
+        model,
         _faiss_index,
         _chunk_metadata,
         top_k=body.top_k,
@@ -140,7 +149,7 @@ def query_endpoint(body: QueryRequest):
     """Full pipeline: retrieve -> route -> LLM -> evaluate. Returns answer + metadata + sources."""
     if _groq_client is None:
         raise HTTPException(status_code=503, detail="GROQ_API_KEY not set")
-    if _faiss_index is None or _embedding_model is None:
+    if _faiss_index is None:
         raise HTTPException(status_code=503, detail="RAG not initialized")
 
     question = (body.question or "").strip()
@@ -152,10 +161,11 @@ def query_endpoint(body: QueryRequest):
     conv_id = body.conversation_id or f"conv_{uuid.uuid4().hex[:12]}"
     history = get_history(conv_id)
 
-    # 1. Retrieve (for current question only)
+    # 1. Retrieve (for current question only; model loads on first use)
+    model = _get_embedding_model()
     results = retrieve(
         question,
-        _embedding_model,
+        model,
         _faiss_index,
         _chunk_metadata,
         top_k=5,
@@ -249,7 +259,7 @@ def query_stream_endpoint(body: QueryRequest):
     """Stream the LLM response token-by-token. NDJSON: metadata, then token lines, then done."""
     if _groq_client is None:
         raise HTTPException(status_code=503, detail="GROQ_API_KEY not set")
-    if _faiss_index is None or _embedding_model is None:
+    if _faiss_index is None:
         raise HTTPException(status_code=503, detail="RAG not initialized")
 
     question = (body.question or "").strip()
@@ -260,7 +270,8 @@ def query_stream_endpoint(body: QueryRequest):
 
     conv_id = body.conversation_id or f"conv_{uuid.uuid4().hex[:12]}"
     history = get_history(conv_id)
-    results = retrieve(question, _embedding_model, _faiss_index, _chunk_metadata, top_k=5)
+    model = _get_embedding_model()
+    results = retrieve(question, model, _faiss_index, _chunk_metadata, top_k=5)
     chunks = [{"text": m["text"], "source": m["source"], "page": m["page"]} for m, _ in results]
     sources = [QuerySource(document=m["source"], page=m["page"], relevance_score=round(s, 4)) for m, s in results]
     classification, model_used = classify(question)
@@ -277,7 +288,7 @@ def run_eval_endpoint():
     """Run eval harness in-process and return pass/fail report (for UI / video demo)."""
     if _groq_client is None:
         raise HTTPException(status_code=503, detail="GROQ_API_KEY not set")
-    if _faiss_index is None or _embedding_model is None:
+    if _faiss_index is None:
         raise HTTPException(status_code=503, detail="RAG not initialized")
     if load_cases is None or check_answer is None:
         raise HTTPException(status_code=503, detail="Eval harness not available (run_eval)")
@@ -292,7 +303,7 @@ def run_eval_endpoint():
         case_id = case.get("id", "unknown")
         try:
             history = []
-            results_ret = retrieve(q, _embedding_model, _faiss_index, _chunk_metadata, top_k=5)
+            results_ret = retrieve(q, _get_embedding_model(), _faiss_index, _chunk_metadata, top_k=5)
             chunks = [{"text": m["text"], "source": m["source"], "page": m["page"]} for m, _ in results_ret]
             classification, model_used = classify(q)
             user_message = build_prompt(chunks, q)

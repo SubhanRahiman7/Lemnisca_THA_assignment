@@ -115,9 +115,11 @@ All assignment requirements and attempted bonuses are complete. You can deploy a
    - New Web Service, connect repo. **Root directory:** leave empty.  
    - **Build:** `cd backend && pip install torch --index-url https://download.pytorch.org/whl/cpu && pip install -r requirements.txt` (CPU-only PyTorch first; required for 512 MB free tier). Or use `cd backend && bash render-build.sh` if that script is in the repo.  
    - **Start:** `cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT`.  
-   - **Environment:** `GROQ_API_KEY` (required), **`PYTHON_VERSION`** = `3.12.11`.  
-   - If the free instance runs **out of memory** at startup, upgrade to **Standard** (2 GB RAM) or add **`OMP_NUM_THREADS`** = `1` to reduce memory use.  
-   - First deploy builds the FAISS index (may take a few minutes).
+   - **Environment:** `GROQ_API_KEY` (required), **`PYTHON_VERSION`** = `3.12.11`, **`OMP_NUM_THREADS`** = `1` (optional, saves RAM).  
+   - **Free tier (512 MB):** The app lazy-loads the embedding model on first query so startup fits in 512 MB. You must **commit a pre-built FAISS index** so the server doesn’t build it at startup (building uses too much memory). From the repo root, run once:  
+     `cd backend && pip install -r requirements.txt && python -c "from pathlib import Path; from rag.retrieval import build_index; build_index(Path('../docs'), Path('data/faiss.index'))"`  
+     then `git add -f backend/data/faiss.index backend/data/faiss.meta.json && git commit -m "Add pre-built FAISS index for Render" && git push`.  
+   - If you still see out-of-memory, use **Standard** (2 GB RAM).
 
 2. **Frontend (Static Site)**  
    - New Static Site, root: `frontend`. Build: `npm install && npm run build`. Publish: `build`.  

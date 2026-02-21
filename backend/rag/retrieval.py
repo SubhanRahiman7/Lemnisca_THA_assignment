@@ -8,10 +8,15 @@ from sentence_transformers import SentenceTransformer
 
 from .chunking import Chunk, chunk_all_pdfs
 
+_cached_model = None
+
 
 def get_embedding_model() -> SentenceTransformer:
-    """Lazy-load one model for the process."""
-    return SentenceTransformer("all-MiniLM-L6-v2")
+    """Lazy-load one model for the process (cached after first call)."""
+    global _cached_model
+    if _cached_model is None:
+        _cached_model = SentenceTransformer("all-MiniLM-L6-v2")
+    return _cached_model
 
 
 def build_index(docs_dir: Path, index_path: Path | None = None):
