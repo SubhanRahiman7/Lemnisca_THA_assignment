@@ -6,5 +6,7 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.11"
-    buildCommand: cd backend && pip install -r requirements.txt
+      - key: OMP_NUM_THREADS
+        value: "1"
+    buildCommand: cd backend && pip install torch --index-url https://download.pytorch.org/whl/cpu && pip install -r requirements.txt
     startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT

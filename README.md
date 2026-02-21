@@ -113,8 +113,10 @@ All assignment requirements and attempted bonuses are complete. You can deploy a
 
 1. **Backend (Web Service)**  
    - New Web Service, connect repo. **Root directory:** leave empty.  
-   - Build: `cd backend && pip install -r requirements.txt`. Start: `cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT`.  
-   - **Environment:** `GROQ_API_KEY` (required). **Set `PYTHON_VERSION` = `3.12.11`** so Render uses Python 3.12 (default 3.14 breaks pydantic build).  
+   - **Build:** `cd backend && pip install torch --index-url https://download.pytorch.org/whl/cpu && pip install -r requirements.txt` (CPU-only PyTorch keeps memory under 512 MB).  
+   - **Start:** `cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT`.  
+   - **Environment:** `GROQ_API_KEY` (required), **`PYTHON_VERSION`** = `3.12.11`.  
+   - If the free instance runs **out of memory** at startup, upgrade to **Standard** (2 GB RAM) or add **`OMP_NUM_THREADS`** = `1` to reduce memory use.  
    - First deploy builds the FAISS index (may take a few minutes).
 
 2. **Frontend (Static Site)**  
