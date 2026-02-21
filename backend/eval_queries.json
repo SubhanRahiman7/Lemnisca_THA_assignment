@@ -1,0 +1,63 @@
+[
+  {
+    "id": "price_pro",
+    "query": "What is the Pro plan price?",
+    "expected_in": ["Pro", "49"],
+    "description": "Pro plan monthly price from Pricing Sheet"
+  },
+  {
+    "id": "free_users",
+    "query": "How many users does the Free plan allow?",
+    "expected_in": ["5", "five"],
+    "description": "Free tier user limit"
+  },
+  {
+    "id": "greeting",
+    "query": "Hi",
+    "expected_in": [],
+    "description": "Greeting; answer should be non-empty and not an error"
+  },
+  {
+    "id": "enterprise",
+    "query": "What is the Enterprise plan?",
+    "expected_in": ["Enterprise", "unlimited"],
+    "description": "Enterprise plan description"
+  },
+  {
+    "id": "integrations",
+    "query": "Does Clearpath have integrations?",
+    "expected_in": ["integration", "50"],
+    "description": "Integrations count or mention"
+  },
+  {
+    "id": "api",
+    "query": "Is there an API?",
+    "expected_in": ["API", "REST"],
+    "description": "API availability"
+  },
+  {
+    "id": "compare_plans",
+    "query": "What is the difference between Free and Pro plans?",
+    "expected_in": ["Free", "Pro"],
+    "description": "Compare Free vs Pro"
+  },
+  {
+    "id": "support_contact",
+    "query": "How do I contact support?",
+    "expected_in": ["support", "contact", "email", "help"],
+    "description": "Support contact info"
+  },
+  {
+    "id": "pricing_doc",
+    "query": "Where can I find pricing information?",
+    "expected_in": ["pricing", "price", "plan", "documentation", "sheet"],
+    "description": "Pricing documentation reference"
+  },
+  {
+    "id": "out_of_scope",
+    "query": "What is the capital of France?",
+    "expected_in": [],
+    "expect_refusal_or_unknown": true,
+    "description": "Out-of-domain; should not assert Paris as fact from docs"
+  }
+]
