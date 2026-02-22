@@ -4,7 +4,7 @@ A customer support chatbot for Clearpath (project management SaaS). It answers q
 
 ## Live demo
 
-- **Chat:** [Frontend](https://lemnisca-tha-assignment-1.onrender.com)
+- **Chat:** [Frontend](https://lemnisca-frontend.onrender.com/)
 - **API:** [Backend](https://lemnisca-tha-assignment.onrender.com) · [Health](https://lemnisca-tha-assignment.onrender.com/health)
 
 ## Getting started
