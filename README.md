@@ -1,54 +1,32 @@
 # Clearpath Support Chatbot
 
-Customer support chatbot for Clearpath (fictional project management SaaS). It answers questions using RAG over 30 PDF docs, a rule-based model router (Groq: Llama 3.1 8B vs Llama 3.3 70B), and an output evaluator that flags unreliable responses.
+A customer support chatbot for Clearpath (project management SaaS). It answers questions using **RAG** over 30 PDF documents, a rule-based **model router** (Groq: Llama 3.1 8B vs Llama 3.3 70B), and an **evaluator** that flags unreliable responses.
 
-## Live deployment
+## Live demo
 
-- **Frontend (chat UI):** [https://lemnisca-tha-assignment-1.onrender.com](https://lemnisca-tha-assignment-1.onrender.com)  
-- **Backend API:** [https://lemnisca-tha-assignment.onrender.com](https://lemnisca-tha-assignment.onrender.com) — health: [/health](https://lemnisca-tha-assignment.onrender.com/health)
+- **Chat:** [Frontend](https://lemnisca-tha-assignment-1.onrender.com)
+- **API:** [Backend](https://lemnisca-tha-assignment.onrender.com) · [Health](https://lemnisca-tha-assignment.onrender.com/health)
 
-The app is much faster when run locally; performance on the live site is reduced by Render free-tier limits (cold starts, 512 MB RAM). Free tier: the backend may sleep after inactivity; the first request after that can take 30–60 seconds to wake. The first chat message may also be slower while the embedding model loads.
+## Getting started
 
-## How to run locally
+Requirements: **Python 3.11 or 3.12**, **Node.js**, and a [Groq API key](https://console.groq.com).
 
-All commands below are from the **project root** (the folder that contains `backend/`, `frontend/`, and `docs/`).
+### Backend
 
-### 1. Backend (Python 3.11 or 3.12)
+From the project root:
 
 ```bash
 cd backend
 python3.12 -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-```
-
-Set your Groq API key (get one at [console.groq.com](https://console.groq.com)):
-
-```bash
 export GROQ_API_KEY=your_key_here
-```
-
-**If you see `401 Invalid API Key`**: the key is wrong, expired, or revoked. Create or copy a new key at [console.groq.com](https://console.groq.com), set `GROQ_API_KEY` again, and restart the backend. No spaces or quotes around the key.
-
-Optional: put the key in `backend/.env`:
-
-```
-GROQ_API_KEY=your_key_here
-```
-
-PDFs are in the repo folder **`docs/`** at project root. The backend uses that by default. To point elsewhere: `export DOCS_DIR=/path/to/docs`.
-
-Start the API:
-
-```bash
 python main.py
 ```
 
-- API: **http://localhost:8000**
-- If `backend/data/faiss.index` exists, the server loads it at startup. Otherwise the first run builds the index from `docs/` (1–2 minutes) and saves it there.
-- Endpoints: `GET /health`, `POST /retrieve`, `POST /query`, `GET /routing_logs`
+API runs at **http://localhost:8000**. Documents are read from the `docs/` folder at project root; override with `DOCS_DIR` if needed. On first run, the FAISS index is built from `docs/` (or loaded from `backend/data/` if present).
 
-### 2. Frontend (React)
+### Frontend
 
 ```bash
 cd frontend
@@ -56,103 +34,46 @@ npm install
 npm start
 ```
 
-- App: **http://localhost:3000**
-- The app talks to the API at `http://localhost:8000` by default. To use a different backend (e.g. the live Render API), set **`REACT_APP_API_URL`** before `npm start`, e.g. `export REACT_APP_API_URL=https://lemnisca-tha-assignment.onrender.com`.
+App runs at **http://localhost:3000** and uses the backend at `http://localhost:8000` by default. Set `REACT_APP_API_URL` to point to another backend.
 
-## Groq models used
+## Models
 
-- **Simple queries**: `llama-3.1-8b-instant`
-- **Complex queries**: `llama-3.3-70b-versatile`
+- **Simple queries:** `llama-3.1-8b-instant`
+- **Complex queries:** `llama-3.3-70b-versatile`
 
-Configured via the router (no extra env).
+Routing is configured in `backend/router.py`.
 
-## Repo structure (submission-ready)
+## Project structure
 
 ```
-your-submission/
   README.md
-  Written_answers.md       # Q1–Q4 + streaming, memory, eval, AI usage
+  Written_answers.md
   docs/                    # 30 Clearpath PDFs
   backend/
-    main.py                # FastAPI app, /query pipeline
-    config.py
-    router.py              # Rule-based simple/complex classifier
-    evaluator.py            # no_context, refusal, pricing_uncertainty
-    llm.py                  # Groq client, prompt build
-    rag/
-      chunking.py           # PDF chunking strategy
-      retrieval.py          # sentence-transformers + FAISS
+    main.py                # FastAPI app
+    config.py, router.py, evaluator.py, llm.py
+    rag/                   # Chunking + sentence-transformers + FAISS
     requirements.txt
-    data/                   # FAISS index (created on first run)
-    eval_queries.json       # Eval harness test cases
-    run_eval.py             # Eval script (run against live API)
+    data/                  # FAISS index (generated or committed)
+    eval_queries.json, run_eval.py
   frontend/
-    src/App.js, App.css     # Chat UI + debug panel
+    src/App.js, App.css    # React chat UI
 ```
 
-## Bonus challenges
+## Features
 
-- **Conversation memory**: Implemented. The backend stores the last 6 messages per `conversation_id` and sends them to the LLM so follow-ups work. Use “New chat” to start a fresh conversation.
-- **Streaming**: Implemented. The UI uses `POST /query/stream`; the backend streams the LLM response token-by-token (NDJSON). See *Written_answers.md* for where structured output parsing breaks with streaming.
-- **Eval harness**: Implemented. Test cases in `backend/eval_queries.json`; run with API up: `cd backend && python run_eval.py`. Use `--json` for JSON report. See “Eval harness” below.
-- **Live deploy**: Implemented. Frontend and backend are on Render — see [Live deployment](#live-deployment) above.
-
-## Eval harness (how to run)
-
-With the backend running:
-
-```bash
-cd backend
-python run_eval.py
-```
-
-Options: `--base-url http://localhost:8000`, `--queries path/to/eval_queries.json`, `--json` (output JSON only). Exit code 0 if all pass, 1 otherwise. Each test has a query and expected content (answer must contain at least one listed phrase). Sample run: 9/10 passed.
-
-In the chat UI, the **Run eval harness** button calls `GET /eval` and shows pass/fail plus **Model, Tokens, Chunks, Latency** per result. If you see dashes (—) for those, restart the backend so it serves the latest response shape.
+- **Conversation memory** — Last 6 messages per conversation; “New chat” starts a new thread.
+- **Streaming** — `POST /query/stream` returns NDJSON; see `Written_answers.md` for details.
+- **Eval harness** — `cd backend && python run_eval.py` (backend must be running). The UI “Run eval harness” button calls `GET /eval`.
 
 ## Deployment
 
-All assignment requirements and attempted bonuses are complete. You can deploy as follows.
+- **Backend:** Run as a Python app (e.g. `uvicorn main:app --host 0.0.0.0 --port $PORT`). Set `GROQ_API_KEY` and, if needed, `DOCS_DIR`.
+- **Frontend:** Build with `npm run build`; set `REACT_APP_API_URL` to your backend URL. Serve the `build` directory.
 
-### Option A — Render (backend + frontend)
+The backend allows all origins (CORS); restrict in production if desired.
 
-1. **Backend (Web Service)**  
-   - New Web Service, connect repo. **Root directory:** leave empty.  
-   - **Build:** `cd backend && pip install torch --index-url https://download.pytorch.org/whl/cpu && pip install -r requirements.txt` (CPU-only PyTorch first; required for 512 MB free tier). Or use `cd backend && bash render-build.sh` if that script is in the repo.  
-   - **Start:** `cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT`.  
-   - **Environment:** `GROQ_API_KEY` (required), **`PYTHON_VERSION`** = `3.12.11`, **`OMP_NUM_THREADS`** = `1` (optional, saves RAM).  
-   - **Free tier (512 MB):** The app lazy-loads the embedding model on first query so startup fits in 512 MB. You must **commit a pre-built FAISS index** so the server doesn’t build it at startup (building uses too much memory). From the repo root, run once:  
-     `cd backend && pip install -r requirements.txt && python -c "from pathlib import Path; from rag.retrieval import build_index; build_index(Path('../docs'), Path('data/faiss.index'))"`  
-     then `git add -f backend/data/faiss.index backend/data/faiss.meta.json && git commit -m "Add pre-built FAISS index for Render" && git push`.  
-   - If you still see out-of-memory, use **Standard** (2 GB RAM).
+## License and docs
 
-2. **Frontend (Static Site)**  
-   - New Static Site, root: `frontend`. Build: `npm install && npm run build`. Publish: `build`.  
-   - Env: `REACT_APP_API_URL=https://lemnisca-tha-assignment.onrender.com` (or your backend URL).
-
-3. **CORS**  
-   - Backend allows all origins in `main.py`; for production you can restrict to your frontend URL.
-
-### Option B — Railway / Fly.io
-
-- **Backend**: Deploy `backend/` as a Python service; run `uvicorn main:app --host 0.0.0.0 --port $PORT`. Set `GROQ_API_KEY` and `DOCS_DIR`.  
-- **Frontend**: Deploy to Vercel/Netlify with `REACT_APP_API_URL` set to your backend URL.
-
-### Option C — Single host (VM)
-
-- Run backend: `gunicorn main:app -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000`.  
-- Build frontend and serve `frontend/build` (e.g. Nginx or FastAPI static files).
-
-### Before going live
-
-- Set `GROQ_API_KEY` on the backend.  
-- Ensure 30 PDFs are available and `DOCS_DIR` is correct.  
-- Set `REACT_APP_API_URL` when building the frontend.
-
----
-
-## Known issues / limitations
-
-- **Python 3.14**: Use 3.11 or 3.12; pydantic/some deps don’t support 3.14 yet.
-- **Docs path**: Default is `docs/` at repo root. Set `DOCS_DIR` if your PDFs are elsewhere.
-- Conversation memory is in-memory only (lost on backend restart).
+- Design and written answers: `Written_answers.md`.
+- Python 3.11 or 3.12 recommended; conversation state is in-memory and does not persist across restarts.
