@@ -1,5 +1,28 @@
 # Written Answers — Clearpath Chatbot
 
+## Bonus challenges attempted
+
+| Challenge | Description | Done |
+|-----------|-------------|------|
+| **Conversation memory** | The chatbot maintains conversation memory across turns. | ✓ |
+| **Streaming** | Stream the response token-by-token. | ✓ |
+| **Eval harness** | Own test queries with expected answers; run system and report pass/fail. | ✓ |
+| **Live deploy** | Deploy to a public URL; extra bonus for business-grade cloud (e.g. AWS). | ✓ |
+
+## Live deployments
+
+**Render**
+
+- **Frontend:** https://lemnisca-frontend.onrender.com/
+- **Backend API:** https://lemnisca-tha-assignment.onrender.com
+
+**AWS (EC2 + S3)**
+
+- **Frontend:** http://clearpath-chatbot-frontend.s3-website.eu-north-1.amazonaws.com/
+- **Backend API:** http://16.170.98.97:8000
+
+---
+
 ## Q1 — Routing Logic
 
 **Rules the router uses**
