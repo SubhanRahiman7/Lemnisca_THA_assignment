@@ -22,6 +22,7 @@ def get_settings() -> Settings:
     s = Settings()
     if docs:
         s.docs_dir = Path(docs).resolve()  # e.g. for deploy: DOCS_DIR=/app/docs
-    if not s.groq_api_key and os.environ.get("GROQ_API_KEY"):
+    # Env var always overrides .env so export GROQ_API_KEY works on EC2 / server
+    if os.environ.get("GROQ_API_KEY"):
         s.groq_api_key = os.environ["GROQ_API_KEY"]
     return s
