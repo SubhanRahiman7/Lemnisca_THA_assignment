@@ -3,6 +3,15 @@ import './App.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
+const EVAL_STATUS_MESSAGES = [
+  'Running test queries against the API…',
+  'Sending each query to the backend…',
+  'Evaluating responses (this may take a minute)…',
+  'Checking pass/fail for each test case…',
+  'Loading models and building answers…',
+  'Almost there…',
+];
+
 /** Convert **bold** and *italic* in a string to React nodes */
 function formatInlineFormatting(str, keyPrefix = '') {
   if (!str || typeof str !== 'string') return str;
@@ -91,6 +100,7 @@ function App() {
   const [conversationId, setConversationId] = useState(null);
   const [evalReport, setEvalReport] = useState(null);
   const [evalLoading, setEvalLoading] = useState(false);
+  const [evalStatusMessage, setEvalStatusMessage] = useState('');
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const inputRef = useRef(null);
@@ -119,6 +129,20 @@ function App() {
     const interval = setInterval(check, 20000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (!evalLoading) {
+      setEvalStatusMessage('');
+      return;
+    }
+    setEvalStatusMessage(EVAL_STATUS_MESSAGES[0]);
+    let idx = 0;
+    const interval = setInterval(() => {
+      idx = (idx + 1) % EVAL_STATUS_MESSAGES.length;
+      setEvalStatusMessage(EVAL_STATUS_MESSAGES[idx]);
+    }, 2800);
+    return () => clearInterval(interval);
+  }, [evalLoading]);
 
   const startNewConversation = () => {
     setConversationId(null);
@@ -413,7 +437,7 @@ function App() {
               <span className="apple-spinner apple-spinner--lg" />
             </div>
             <p className="eval-loading__text">Running eval harness…</p>
-            <p className="eval-loading__hint">Running test queries against the API. This may take a minute.</p>
+            <p className="eval-loading__hint">{evalStatusMessage || 'Running test queries against the API…'}</p>
           </div>
         )}
 
