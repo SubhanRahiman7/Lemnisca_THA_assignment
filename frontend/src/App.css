@@ -201,6 +201,16 @@
   animation: fadeIn 0.5s ease;
 }
 
+.message--welcome {
+  animation: fadeIn 0.4s ease;
+}
+.message--welcome .message-paragraph {
+  margin-bottom: 0.6rem;
+}
+.message--welcome .message-paragraph:last-child {
+  margin-bottom: 0;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }

@@ -4,8 +4,15 @@ A customer support chatbot for Clearpath (project management SaaS). It answers q
 
 ## Live demo
 
+**Render**
+
 - **Chat:** [Frontend](https://lemnisca-frontend.onrender.com/)
 - **API:** [Backend](https://lemnisca-tha-assignment.onrender.com) · [Health](https://lemnisca-tha-assignment.onrender.com/health)
+
+**AWS (EC2 + S3)**
+
+- **Chat:** [Frontend](http://clearpath-chatbot-frontend.s3-website-eu-north-1.amazonaws.com/)
+- **API:** [Backend](http://16.170.98.97:8000) · [Health](http://16.170.98.97:8000/health)
 
 ## Getting started
 
@@ -47,7 +54,7 @@ Routing is configured in `backend/router.py`.
 
 ```
   README.md
-  Written_answers.md
+  Written_answers.md       # Design and written answers
   docs/                    # 30 Clearpath PDFs
   backend/
     main.py                # FastAPI app
@@ -68,12 +75,14 @@ Routing is configured in `backend/router.py`.
 
 ## Deployment
 
-- **Backend:** Run as a Python app (e.g. `uvicorn main:app --host 0.0.0.0 --port $PORT`). Set `GROQ_API_KEY` and, if needed, `DOCS_DIR`.
-- **Frontend:** Build with `npm run build`; set `REACT_APP_API_URL` to your backend URL. Serve the `build` directory.
+- **Render:** See `render.yaml` for the live setup.
+- **AWS:** Full app on EC2 (backend) + S3 (frontend), free tier.
+- **Generic:** Backend: `uvicorn main:app --host 0.0.0.0 --port $PORT`; set `GROQ_API_KEY` and `DOCS_DIR`. Frontend: `npm run build` with `REACT_APP_API_URL`; serve `build/`.
 
 The backend allows all origins (CORS); restrict in production if desired.
 
-## License and docs
+## Docs
 
-- Design and written answers: `Written_answers.md`.
-- Python 3.11 or 3.12 recommended; conversation state is in-memory and does not persist across restarts.
+- **Written_answers.md** — Design and written answers.
+
+Conversation state is in-memory and does not persist across restarts.

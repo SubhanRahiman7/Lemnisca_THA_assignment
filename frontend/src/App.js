@@ -281,7 +281,13 @@ function App() {
       <main className="chat-main">
         <div className="messages" ref={messagesContainerRef}>
           {messages.length === 0 && (
-            <div className="placeholder">Ask e.g. &quot;What is the Pro plan price?&quot; or &quot;How do I create a custom workflow?&quot;</div>
+            <div className="message assistant message--welcome">
+              <span className="role">Clearpath</span>
+              <div className="text message-text-formatted">
+                <p className="message-paragraph">Hi! I’m the Clearpath support assistant. You can ask me about plans, pricing, the API, workflows, or anything in the docs.</p>
+                <p className="message-paragraph">Try: <strong>“What is the Pro plan price?”</strong> or <strong>“How do I create a custom workflow?”</strong></p>
+              </div>
+            </div>
           )}
           {messages.map((m, i) => (
             <div key={i} className={`message ${m.role}${m.streaming ? ' streaming' : ''}`}>

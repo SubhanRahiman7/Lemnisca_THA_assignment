@@ -1,0 +1,24 @@
+# Git and IDE
+.git
+.gitignore
+.cursor
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+node_modules
+
+# Frontend (backend image only)
+frontend
+
+# Docs and logs
+*.md
+!README.md
+.env
+.env.*
+!.env.example
+
+# Avoid copying large or redundant data
+*.log
+.DS_Store
