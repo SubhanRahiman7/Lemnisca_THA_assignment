@@ -11,7 +11,7 @@ A customer support chatbot for Clearpath (project management SaaS). It answers q
 
 **AWS (EC2 + S3)**
 
-- **Chat:** [Frontend](http://clearpath-chatbot-frontend.s3-website-eu-north-1.amazonaws.com/)
+- **Chat:** [Frontend](http://clearpath-chatbot-frontend.s3-website.eu-north-1.amazonaws.com/)
 - **API:** [Backend](http://16.170.98.97:8000) · [Health](http://16.170.98.97:8000/health)
 
 ## Getting started
