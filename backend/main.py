@@ -61,7 +61,8 @@ async def lifespan(app: FastAPI):
 
     if settings.groq_api_key:
         _groq_client = Groq(api_key=settings.groq_api_key)
-        print("Groq client initialized")
+        from os import environ
+        print(f"Groq client initialized (key from env: {bool(environ.get('GROQ_API_KEY'))}, len={len(settings.groq_api_key)})")
     else:
         _groq_client = None
         print("GROQ_API_KEY not set; /query will return 503 until configured")
